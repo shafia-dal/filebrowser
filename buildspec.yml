@@ -19,7 +19,7 @@ phases:
     
   build:
     commands:
-      #- cd filebrowser
+      - cd filebrowser
       - docker build -t $IMAGE_REPO_NAME .
       - docker tag $IMAGE_REPO_NAME:latest $REPO_URI:$IMAGE_TAG
   post_build:
