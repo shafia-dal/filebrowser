@@ -8,19 +8,27 @@ env:
     CLUSTER_NAME: "filebrowser"
     SERVICE_NAME: "filebrowser"
   # parameter-store:
-  # LOGIN_PASSWORD: /CodeBuild/dockerLoginPassword
+  #   LOGIN_PASSWORD: /CodeBuild/dockerLoginPassword
 
 phases:
   pre_build:
     commands:
+      - curl checkip.amazonaws.com
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 183295452329.dkr.ecr.ap-south-1.amazonaws.com
-      - REPO_URI=183295452329.dkr.ecr.ap-south-1.amazonaws.com/$IMAGE_REPO_NAME
+      - REPO_URI=183295452329.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME
     
   build:
     commands:
+      - cd filebrowser
       - docker build -t $IMAGE_REPO_NAME .
       - docker tag $IMAGE_REPO_NAME:latest $REPO_URI:$IMAGE_TAG
-
   post_build:
     commands:
-      - docker push $REPO_URI:$IMAGE_TAG  
+      - docker push $REPO_URI:$IMAGE_TAG
+      - cd ..
+      - printf '[{"name":"fa-filebrowser","imageUri":"%s"}]' $REPO_URI:$IMAGE_TAG > imagedefinitions.json
+      - cat imagedefinitions.json || true
+      - ls -la
+
+artifacts:
+  files: imagedefinitions.json
