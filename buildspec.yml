@@ -19,14 +19,14 @@ phases:
     
   build:
     commands:
-      # - cd filebrowser
+      #- cd filebrowser
       - docker build -t $IMAGE_REPO_NAME .
       - docker tag $IMAGE_REPO_NAME:latest $REPO_URI:$IMAGE_TAG
   post_build:
     commands:
       - docker push $REPO_URI:$IMAGE_TAG
       - cd ..
-      - printf '[{"name":"fa-filebrowser","imageUri":"%s"}]' $REPO_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"filebrowser","imageUri":"%s"}]' $REPO_URI:$IMAGE_TAG > imagedefinitions.json
       - cat imagedefinitions.json || true
       - ls -la
 
